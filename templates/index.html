@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<head>
+    <link href="{% static 'todo/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'todo/css/all.css' %}" rel="stylesheet">
+    <script src="{% static 'todo/bootstrap/js/bootstrap.js' %}" language="JavaScript"></script>
+    <title>index</title>
+    <style>
+        .grad {
+            background-image: linear-gradient(-90deg, #09203f, #537895);
+            min-height: 100vh;
+            background-image: linear-gradient(-45deg, #09203f, #537895);
+            min-height: 100vh;
+            text-align: center;
+            padding: 40px;
+        }
+    </style>
+
+</head>
+<body>
+<div class="row container-fluid text-center grad" id="wrapper">
+
+    <div class="float-right col-lg-8 col-md-8 col-sm-12">
+
+        <div class="row justify-content-center">
+            <div class="card col-lg-10 col-md-10 col-sm-12" id="card">
+                <div class="card-body">
+                    <h5>
+                        {{ mydate|date:"D" }} {{ mydate|time:"H:i" }}
+                    </h5>
+                    <br>
+                    <h2>
+                        امروز چه کاری داری؟
+                    </h2>
+                    <form action="{% url 'addTodo' %}" method="post">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            {{ todoForm.text }}
+                            <span class="input-group-append"><button class="btn btn-primary" type="submit">ثبت</button></span>
+                        </div>
+                    </form>
+                    <br>
+                    <div class="row btn-group">
+                        <a href="{% url 'deleteAllTodo' %}">
+                            <button class="btn btn btn-danger">
+                                <i class="fa fa-trash-alt"></i> حذف همه
+                            </button>
+                        </a>
+                        <a href="{% url 'deleteCompletedTodo' %}">
+                            <button class="btn btn btn-warning">
+                                <i class="fa fa-trash"></i> حذف انجام شده ها
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <ul class="list-group text-right">
+                        {% for todo in todo_list %}
+                            {% if todo.complete %}
+                                <s>
+                                    <li class="list-group-item"> {{ todo.text }}</li>
+                                </s>
+                            {% else %}
+                                <a href="{% url 'completeTodo' todo.id %}">
+                                    <li class="list-group-item"> {{ todo.text }}</li>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="float-left col-lg-4 col-md-4 col-sm-12">
+
+        <div class="row justify-content-center">
+            <div class="col-sm-12 col-lg-10">
+                <form method="post" action="{% url 'addCity' %}">
+                    {% csrf_token %}
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <div class="input-group">
+                                <!--<input class="form-control" id="city" type="text" name="city"
+                                       placeholder="نام شهر">-->
+                                {{ cityForm.name }}
+                                <span class="input-group-append"><button class="btn btn-primary" type="submit">افزودن</button></span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            {% for city_weather in weather_data %}
+                <div class="col-sm-12 col-lg-10">
+                    <div class="card text-white bg-dark border-light">
+                        <div class="card-body pb-0">
+                            <a href="{% url 'removeCity' city_id=city_weather.id %}">
+                                <i class="fa fa-window-close fa-sm"
+                                   style="color:white; position: absolute; left: 10px; top: 10px;"></i>
+                            </a>
+                            <h3>{{ city_weather.city }}</h3>
+                            <div class="text-value">{{ city_weather.temperature }} ْ C
+                                <br>
+                                {{ city_weather.description }}
+                                <br>
+                                <img src="http://openweathermap.org/img/w/{{ city_weather.icon }}.png">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+
+</div>
+
+</body>
+</html>
+
